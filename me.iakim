@@ -2,7 +2,7 @@ steps
 
 1 - zbx agnt configs parameters
     unsafe=0
-    user=iakim.service,ss (uses) | wc -l
+    user=iakim.service.estab,ss (uses) | wc -l
 
 2 - server configs
     template = item
@@ -13,3 +13,8 @@ steps
     key = iakim.service
     type = num(float)
     units = con
+
+Rules
+
+1 item for time-wait, estab, close-wait
+2 change grep for get exclusive con, removing others con
