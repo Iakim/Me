@@ -2,7 +2,7 @@ steps
 
 1 - zbx agnt configs
     unsafe=0
-    user=iakim.service,ss
+    user=iakim.service,ss (uses) | wc -l
 
 2 - server configs
     template = item
