@@ -1,0 +1,15 @@
+steps
+
+1 - zbx agnt configs
+    unsafe=0
+    user=iakim.service,ss
+
+2 - server configs
+    template = item
+    template = graph
+
+3 - template configs
+    name = service con
+    key = iakim.service
+    type = num(float)
+    units = con
