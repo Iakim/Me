@@ -18,3 +18,4 @@ Rules
 
 1 item for time-wait, estab, close-wait
 2 change grep for get exclusive con, removing others con
+3 do not uses template create before, you have create template for all clients
