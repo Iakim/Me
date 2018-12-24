@@ -1,6 +1,6 @@
 steps
 
-1 - zbx agnt configs
+1 - zbx agnt configs parameters
     unsafe=0
     user=iakim.service,ss (uses) | wc -l
 
