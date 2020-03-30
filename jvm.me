@@ -1,0 +1,13 @@
+EAP and WildFly
+
+JAVA_OPTS="-server -Xmx2g -Xms2g -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 -XX:SurvivorRatio=6"
+JAVA_OPTS="$JAVA_OPTS -Djboss.modules.policy-permissions=true -XX:+DoEscapeAnalysis -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+ExplicitGCInvokesConcurrent -XX:MaxGCPauseMillis=500"
+JAVA_OPTS="$JAVA_OPTS -XX:+UseFastAccessorMethods -XX:+UseLargePages"
+JAVA_OPTS="$JAVA_OPTS -XX:ParallelGCThreads=2"
+JAVA_OPTS="$JAVA_OPTS -Duser.language=pt -Duser.region=BR -Duser.country=BR"
+JAVA_OPTS="$JAVA_OPTS -verbose:gc -Xloggc:standalone/log/gc.log.`date +%Y%m%d%H%M%S` -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCApplicationStoppedTime"
+JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true -XX:LargePageSizeInBytes=2048k -XX:+UseCompressedOops -Duser.timezone=America/Sao_Paulo"
+
+Tomcat
+
+CATALINA_OPTS="$CATALINA_OPTS -server -Xmx2g -Xms2g -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 -XX:SurvivorRatio=6 -XX:+DoEscapeAnalysis -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+ExplicitGCInvokesConcurrent -XX:MaxGCPauseMillis=500 -XX:+UseLargePages -XX:ParallelGCThreads=2 -Duser.language=pt -Duser.region=BR -Duser.country=BR -verbose:gc -Xloggc:/opt/liferay-commerce-2.0.7-7.2.1-ga2/tomcat-9.0.17/logs/gc.log.`date +%Y%m%d%H%M%S` -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCApplicationStoppedTime -Djava.awt.headless=true -XX:LargePageSizeInBytes=2048k -XX:+UseCompressedOops -Duser.timezone=America/Sao_Paulo"
