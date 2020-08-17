@@ -1,4 +1,4 @@
-# Steps to analyze
+# Steps to analyze index/shard broken :/
 
 ### Show shards stats
 
@@ -128,3 +128,56 @@
 
     [root@node208 bin]# curl -XPUT "node208:9200/liferay-internet-20154/_settings" -d '{ "index" : { "max_result_window" : 4000 } }'
    
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+# Create a Backup and Restore index
+
+## Create a folder to backup and change the permissions to elastic
+
+    mkdir -p /var/backup_index
+    chown -R elasticsearch. /var/backup_index
+
+## Add the path.repo in elasticsearch.yaml
+
+    path.repo: "/var"
+  
+  OR
+  
+    path.repo: ["/mount/backups", "/mount/longterm_backups"]
+    
+## Register repository
+
+    curl -X PUT "localhost:9200/_snapshot/backup_index?pretty" -H 'Content-Type: application/json' -d'
+    {
+      "type": "fs",
+      "settings": {
+        "location": "/var/backup_index"
+	"compress": true
+      }
+    }
+    '
+
+## Create snapshot, by default all index are included, for my example I choose only two: iakim and metricbeat.
+
+    curl -X PUT "localhost:9200/_snapshot/backup_index/snapshot_1?wait_for_completion=true&pretty" -H 'Content-Type: application/json' -d'
+    {
+      "indices": "iakim,metricbeat-7.8.1-2020.08.13-000001",
+      "ignore_unavailable": true,
+      "include_global_state": false
+    }
+    '
+    
+## See your snapshot
+
+    curl -X GET -u elas "localhost:9200/_snapshot/backup_index/snapshot_1?pretty"
+    ls -la /var/backup_index
+    
+## Delete your indexes
+
+    curl -X DELETE http://localhost:9200/iakim
+    curl -X DELETE http://localhost:9200/metricbeat-7.8.1-2020.08.13-000001
+    
+## Restore your indexes
+
+    curl -X POST "localhost:9200/_snapshot/backup_index/snapshot_1/_restore?pretty"
+    
