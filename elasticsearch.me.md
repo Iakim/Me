@@ -169,13 +169,13 @@
     
 ## See your snapshot
 
-    curl -X GET -u elas "localhost:9200/_snapshot/backup_index/snapshot_1?pretty"
+    curl -X GET "localhost:9200/_snapshot/backup_index/snapshot_1?pretty"
     ls -la /var/backup_index
     
 ## Delete your indexes
 
-    curl -X DELETE http://localhost:9200/iakim
-    curl -X DELETE http://localhost:9200/metricbeat-7.8.1-2020.08.13-000001
+    curl -X DELETE "localhost:9200/iakim"
+    curl -X DELETE "localhost:9200/metricbeat-7.8.1-2020.08.13-000001"
     
 ## Restore your indexes
 
