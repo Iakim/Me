@@ -137,7 +137,7 @@
     mkdir -p /var/backup_index
     chown -R elasticsearch. /var/backup_index
 
-## Add the path.repo in elasticsearch.yaml
+## Add the path.repo in elasticsearch.yml
 
     path.repo: "/var"
   
