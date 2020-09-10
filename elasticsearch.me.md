@@ -147,15 +147,16 @@
     
 ## Register repository
 
-    curl -X PUT "localhost:9200/_snapshot/backup_index?pretty" -H 'Content-Type: application/json' -d'
-    {
-      "type": "fs",
-      "settings": {
-        "location": "/var/backup_index"
-	"compress": true
-      }
-    }
-    '
+	curl -X PUT "localhost:9200/_snapshot/backup_index?pretty" -H 'Content-Type: application/json' -d 
+	'
+	{
+	  "type": "fs",
+	  "settings": {
+	    "location": "/var/backup_index",
+	    "compress": true
+	  }
+	}
+	'
 
 ## Create snapshot, by default all index are included, for my example I choose only two: iakim and metricbeat.
 
