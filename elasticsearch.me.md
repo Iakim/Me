@@ -182,3 +182,60 @@
 
     curl -X POST "localhost:9200/_snapshot/backup_index/snapshot_1/_restore?pretty"
     
+
+# SHARDS X NODES X REPLICAS
+
+Fragmentos: unidade de distribuição do indice no cluster
+Nodes: servidores de elasticsearch
+Réplicas: são fragmentos replicados
+
+1 - O fragmento não deve conter mais de 50GB;
+2 - Para cada fragmento que você tenha, você deverá ter o mesmo tanto de node data;
+3 - Para cada réplica que você tiver você precisará ter o mesmo tanto de node data por réplica;
+4 - Para cada réplica adicionada é preciso ter um master elegível no datacenter.
+
+Estudo de caso 1:
+
+O cliente solicitou que fosse montada uma arquiterura com uma réplica para um índex com 110GB.
+
+Para isso precisaremos de 3 node data como primário, 3 nodes datas como réplica e 2 masters, um com replica e outro como primário.
+
+Data center 1
+[node master + node data] P 36.6GB
+[node data] P 36.6GB
+[node data] P 36.6GB
+
+Data center 2
+[node master + node data] R 36.6GB
+[node data] R 36.6GB
+[node data] R 36.6GB
+
+Estudo de caso 2:
+
+O cliente solicitou que fosse montada uma arquiterura com duas réplica para um índex com 270GB.
+
+Para isso precisaremos de 6 node data como primário, 12 nodes datas como réplica e 3 masters, um com replica e outro como primário.
+
+Data center 1
+[node master + node data] P 45GB
+[node data] P 45GB
+[node data] P 45GB
+[node data] P 45GB
+[node data] P 45GB
+[node data] P 45GB
+
+Data center 2
+[node master + node data] R 45GB
+[node data] R 45GB
+[node data] R 45GB
+[node data] R 45GB
+[node data] R 45GB
+[node data] R 45GB
+
+Data center 3
+[node master + node data] R 45GB
+[node data] R 45GB
+[node data] R 45GB
+[node data] R 45GB
+[node data] R 45GB
+[node data] R 45GB
