@@ -185,57 +185,81 @@
 
 # SHARDS X NODES X REPLICAS
 
-Fragmentos: unidade de distribuição do indice no cluster
-Nodes: servidores de elasticsearch
-Réplicas: são fragmentos replicados
+### Fragments: index distribution unit in the cluster
+### Nodes: elasticsearch servers
+### Replicas: are replicated fragments
 
-1 - O fragmento não deve conter mais de 50GB;
-2 - Para cada fragmento que você tenha, você deverá ter o mesmo tanto de node data;
-3 - Para cada réplica que você tiver você precisará ter o mesmo tanto de node data por réplica;
-4 - Para cada réplica adicionada é preciso ter um master elegível no datacenter.
+#### 1 - The fragment must not contain more than 50GB;
+#### 2 - For each fragment you have, you must have the same number of node data;
+#### 3 - For each replica you have you will need to have the same number of node data per replica;
+#### 4 - For each replica added, you must have an eligible master in the datacenter.
 
-Estudo de caso 1:
+#### Case 1:
 
-O cliente solicitou que fosse montada uma arquiterura com uma réplica para um índex com 110GB.
+The customer requested that an architer with a replica for a 110GB index be assembled.
 
-Para isso precisaremos de 3 node data como primário, 3 nodes datas como réplica e 2 masters, um com replica e outro como primário.
+For that, we will need 3 node data as a primary, 3 node data as a replica and 2 masters, one with a replica and the other as a primary.
 
 Data center 1
+
 [node master + node data] P 36.6GB
+
 [node data] P 36.6GB
+
 [node data] P 36.6GB
 
 Data center 2
+
 [node master + node data] R 36.6GB
+
 [node data] R 36.6GB
+
 [node data] R 36.6GB
 
-Estudo de caso 2:
+#### Case 2:
 
-O cliente solicitou que fosse montada uma arquiterura com duas réplica para um índex com 270GB.
+The customer requested that an architer with two replica be assembled for an index with 270GB.
 
-Para isso precisaremos de 6 node data como primário, 12 nodes datas como réplica e 3 masters, um com replica e outro como primário.
+For that, we will need 6 data nodes as a primary, 12 data nodes as a replica and 3 masters, two as a replica and one as a primary.
 
 Data center 1
+
 [node master + node data] P 45GB
+
 [node data] P 45GB
+
 [node data] P 45GB
+
 [node data] P 45GB
+
 [node data] P 45GB
+
 [node data] P 45GB
 
 Data center 2
+
 [node master + node data] R 45GB
+
 [node data] R 45GB
+
 [node data] R 45GB
+
 [node data] R 45GB
+
 [node data] R 45GB
+
 [node data] R 45GB
 
 Data center 3
+
 [node master + node data] R 45GB
+
 [node data] R 45GB
+
 [node data] R 45GB
+
 [node data] R 45GB
+
 [node data] R 45GB
+
 [node data] R 45GB
