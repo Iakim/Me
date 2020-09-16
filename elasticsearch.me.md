@@ -263,3 +263,24 @@ Data center 3
 [node data] R 45GB
 
 [node data] R 45GB
+
+
+	curl -XPOST "192.168.15.6:9200/_cluster/reroute" -H 'Content-Type: application/json' -d '
+	{
+	  "commands": [
+	    {
+	      "move": {
+		"index": "iakim3", "shard": 1,
+		"from_node": "node-3", "to_node": "node-2"
+	      }
+	    }
+	  ]
+	}'
+
+
+	curl -XPUT "192.168.15.6:9200/iakim3/_settings" -H 'Content-Type: application/json' -d '
+	{
+	    "index" : {
+		"number_of_replicas" : 1
+	    }
+	}'
