@@ -188,17 +188,20 @@
 ### Fragments: index distribution unit in the cluster
 ### Nodes: elasticsearch servers
 ### Replicas: are replicated fragments
+### Data Node: are servers dedicated to data
+### Master Node: are server dedicated to control
 
-#### 1 - The fragment must not contain more than 50GB;
+#### 1 - The fragment must not contain more than 40GB;
 #### 2 - For each fragment you have, you must have the same number of node data;
 #### 3 - For each replica you have you will need to have the same number of node data per replica;
 #### 4 - For each replica added, you must have an eligible master in the datacenter.
+#### 5 - You need three sites to complete minimum requeriments for this cases
 
 #### Case 1:
 
 The customer requested that an architer with a replica for a 110GB index be assembled.
 
-For that, we will need 3 node data as a primary, 3 node data as a replica and 2 masters, one with a replica and the other as a primary.
+For that, we will need 3 node data as a primary, 3 node data as a replica and 3 masters, one with a replica, other as a primary and other for complet quorum.
 
 Data center 1
 
@@ -216,71 +219,162 @@ Data center 2
 
 [node data] R 36.6GB
 
+Data center 3 (Cloud)
+
+[node master only]
+
 #### Case 2:
 
-The customer requested that an architer with two replica be assembled for an index with 270GB.
+The customer requested that an architer with two replica be assembled for an index with 200GB.
 
 For that, we will need 6 data nodes as a primary, 12 data nodes as a replica and 3 masters, two as a replica and one as a primary.
 
 Data center 1
 
-[node master + node data] P 45GB
+[node master + node data] P 33.3GB
 
-[node data] P 45GB
+[node data] P 33.3GB
 
-[node data] P 45GB
+[node data] P 33.3GB
 
-[node data] P 45GB
+[node data] P 33.3GB
 
-[node data] P 45GB
+[node data] P 33.3GB
 
-[node data] P 45GB
+[node data] P 33.3GB
 
 Data center 2
 
-[node master + node data] R 45GB
+[node master + node data] R 33.3GB
 
-[node data] R 45GB
+[node data] R 33.3GB
 
-[node data] R 45GB
+[node data] R 33.3GB
 
-[node data] R 45GB
+[node data] R 33.3GB
 
-[node data] R 45GB
+[node data] R 33.3GB
 
-[node data] R 45GB
+[node data] R 33.3GB
 
 Data center 3
 
-[node master + node data] R 45GB
+[node master + node data] R 33.3GB
 
-[node data] R 45GB
+[node data] R 33.3GB
 
-[node data] R 45GB
+[node data] R 33.3GB
 
-[node data] R 45GB
+[node data] R 33.3GB
 
-[node data] R 45GB
+[node data] R 33.3GB
 
-[node data] R 45GB
-
-
-	curl -XPOST "192.168.15.6:9200/_cluster/reroute" -H 'Content-Type: application/json' -d '
-	{
-	  "commands": [
-	    {
-	      "move": {
-		"index": "iakim3", "shard": 1,
-		"from_node": "node-3", "to_node": "node-2"
-	      }
-	    }
-	  ]
-	}'
+[node data] R 33.3GB
 
 
-	curl -XPUT "192.168.15.6:9200/iakim3/_settings" -H 'Content-Type: application/json' -d '
-	{
-	    "index" : {
-		"number_of_replicas" : 1
-	    }
-	}'
+### Details of case 1
+
+#### COMPLETED CLUSTER WITHOUT FAILS
+
+		# curl -X GET 192.168.15.24:9200/_cat/nodes
+		192.168.15.13  8 59  5 0.21 0.14 0.10 mdi - node-4 SITE-2
+		192.168.15.9   9 60  5 0.05 0.06 0.05 di  - node-2 SITE-1
+		192.168.15.10 15 59  3 0.14 0.11 0.08 di  - node-3 SITE-2
+		192.168.15.6  13 60  5 0.19 0.14 0.09 mdi * node-1 SITE-1
+		192.168.15.24 23 74 14 0.54 0.69 0.56 mi  - node-cloud CLOUD
+
+#### CORRECTLY ASSIGNED FRAGMENTS AND REPLICA
+
+		# curl -X GET 192.168.15.24:9200/_cat/shards
+		iakim 1 r STARTED 186   47kb 192.168.15.13 node-4 SITE-2
+		iakim 1 p STARTED 186   77kb 192.168.15.9  node-2 SITE-1
+		iakim 0 p STARTED 163 37.3kb 192.168.15.6  node-1 SITE-1
+		iakim 0 r STARTED 163 37.9kb 192.168.15.10 node-3 SITE-2
+
+#### HITS
+		# curl http://192.168.15.24:9200/iakim/_search?filter_path=hits.total
+		{"hits":{"total":349}}
+
+#### SITE-1 FAILS
+
+		# curl -X GET 192.168.15.24:9200/_cat/nodes
+		192.168.15.13  9 59 3 0.12 0.12 0.10 mdi - node-4 SITE-2
+		192.168.15.10  9 59 3 0.08 0.10 0.08 di  - node-3 SITE-2
+		192.168.15.24 25 74 8 0.50 0.67 0.56 mi  * node-cloud CLOUD
+
+#### SHARDS OF SITE-2 AS PRIMARY
+
+		# curl -X GET 192.168.15.24:9200/_cat/shards
+		iakim 1 p STARTED    186   47kb 192.168.15.13 node-4 SITE-2
+		iakim 1 r UNASSIGNED SITE-1
+		iakim 0 p STARTED    163 37.9kb 192.168.15.10 node-3 SITE-2
+		iakim 0 r UNASSIGNED SITE-1
+
+#### HITS OK!
+
+		# curl http://192.168.15.24:9200/iakim/_search?filter_path=hits.total
+		{"hits":{"total":349}}
+
+#### SITE-2 FAILS
+
+		# curl -X GET 192.168.15.24:9200/_cat/nodes
+		192.168.15.9  11 58 53 1.35 0.45 0.18 di  - node-2 SITE-1
+		192.168.15.6  11 59 56 1.53 0.58 0.25 mdi - node-1 SITE-1
+		192.168.15.24 26 74  9 0.34 0.56 0.53 mi  * node-cloud CLOUD
+
+#### SITE-1 ASSIGNED SHARDS AND REPLICA
+
+		# curl -X GET 192.168.15.24:9200/_cat/shards
+		iakim 1 r STARTED 186 77.7kb 192.168.15.6 node-1 SITE-1
+		iakim 1 p STARTED 186 77.7kb 192.168.15.9 node-2 SITE-1
+		iakim 0 p STARTED 163 37.4kb 192.168.15.6 node-1 SITE-1
+		iakim 0 r STARTED 163 37.4kb 192.168.15.9 node-2 SITE-1
+
+#### HITS OK!
+
+		# curl http://192.168.15.24:9200/iakim/_search?filter_path=hits.total 
+		{"hits":{"total":349}}
+
+#### COMPLETED CLUSTER WITHOUT FAILS AGAIN
+
+		# curl -X GET 192.168.15.24:9200/_cat/nodes
+		192.168.15.13 13 58 6 1.22 0.44 0.21 mdi - node-4 SITE-2
+		192.168.15.9  12 58 3 0.23 0.32 0.16 di  - node-2 SITE-1
+		192.168.15.10 12 58 4 1.40 0.53 0.23 di  - node-3 SITE-2
+		192.168.15.6  14 59 2 0.26 0.41 0.22 mdi - node-1 SITE-1
+		192.168.15.24 29 74 7 0.82 0.62 0.55 mi  * node-cloud CLOUD
+
+#### SHARD ON NODE-1 WORK AS REPLICA, WILL CHANGE TO PRIMARY WITH PRIMARY SHARD 0 ON NODE-4
+
+		# curl -X GET 192.168.15.24:9200/_cat/shards
+		iakim 1 r STARTED 186 77.7kb 192.168.15.6  node-1 SITE-1 (CHANGE THIS)
+		iakim 1 p STARTED 186 77.7kb 192.168.15.9  node-2 SITE-1
+		iakim 0 r STARTED 163 38.1kb 192.168.15.10 node-3 SITE-2
+		iakim 0 p STARTED 163 37.4kb 192.168.15.13 node-4 SITE-2 (WITH THIS)
+
+#### MOVING SHARDS
+
+		# curl -XPOST "192.168.15.24:9200/_cluster/reroute" -H 'Content-Type: application/json' -d ' 
+		{
+		  "commands": [
+		    {
+		      "move": {
+			"index": "iakim", "shard": 0,
+			"from_node": "node-4", "to_node": "node-1"
+		      }
+		    }
+		  ]
+		}'
+
+#### GETTING SHARDS AGAIN
+
+		# curl -X GET 192.168.15.24:9200/_cat/shards
+		iakim 1 r STARTED 186 77.7kb 192.168.15.13 node-4 SITE-2
+		iakim 1 p STARTED 186 77.7kb 192.168.15.9  node-2 SITE-1
+		iakim 0 p STARTED 163 37.4kb 192.168.15.6  node-1 SITE-1
+		iakim 0 r STARTED 163 38.1kb 192.168.15.10 node-3 SITE-2
+
+#### HITS OK!
+
+		# curl http://192.168.15.24:9200/iakim/_search?filter_path=hits.total
+		{"hits":{"total":349}}
