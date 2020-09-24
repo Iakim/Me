@@ -126,7 +126,7 @@
 
 ### Change max_result_window of default (10.000) to variable of envioriments (in my case 4.000)
 
-    [root@node208 bin]# curl -XPUT "node208:9200/liferay-internet-20154/_settings" -d '{ "index" : { "max_result_window" : 4000 } }'
+    [root@node208 bin]# curl -XPUT "node208:9200/liferay-internet-20154/_settings" -H 'Content-Type: application/json' -d '{ "index" : { "max_result_window" : 4000 } }'
    
 -----------------------------------------------------------------------------------------------------------------------------------------------
 
