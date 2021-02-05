@@ -1,138 +1,162 @@
-
 #!/bin/bash
 
-atualiza=`date`
-echo "<html>"
-echo "<title>Histórico de Publicações no Portal da IN</title>"
-echo " "
-echo "<head>"
-echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
-echo "<style>"
-echo "body {"
-echo "  margin: 0;"
-echo "  font-family: Arial, Helvetica, sans-serif;"
-echo "}"
-echo "table, th, td {"
-echo "  border: 1px solid black;"
-echo "  border-collapse: collapse;"
-echo "}"
-echo "tr:hover {"
-echo "  background-color: #DCDCDC;"
-echo "}"
-echo "* {"
-echo "  box-sizing: border-box;"
-echo "}"
-echo "#myInput {"
-echo "  margin: auto;"
-echo "  width: 65%;"
-echo "  border: 3px solid #73AD21;"
-echo "  padding: 10px;"
-echo "}"
-echo "#myInputsecao {"
-echo "  margin: auto;"
-echo "  width: 65%;"
-echo "  border: 3px solid #73AD21;"
-echo "  padding: 10px;"
-echo "}"
-echo "#myTable {"
-echo "  border-collapse: collapse;"
-echo "  width: 100%;"
-echo "  border: 1px solid #ddd;"
-echo "  font-size: 18px;"
-echo "}"
-echo "#myTable th, #myTable td {"
-echo "  text-align: left;"
-echo "  padding: 12px;"
-echo "}"
-echo "#myTable tr {"
-echo "  border-bottom: 1px solid #ddd;"
-echo "}"
-echo "#myTable tr.header, #myTable tr:hover {"
-echo "  background-color: #f1f1f1;"
-echo "}"
-echo "</style>"
-echo " "
-echo "<body>"
-echo "<center><h2>Histórico de Publicações no Portal da IN</h2></center>"
-echo "<script>"
-echo "var btnContainer = document.getElementById(\"myBtnContainer\");"
-echo "var btns = 0;"
-echo "for (var i = 0; i < btns.length; i++) {"
-echo "  btns[i].addEventListener(\"click\", function() {"
-echo "    var current = document.getElementsByClassName(\"active\");"
-echo "    current[0].className = current[0].className.replace(\" active\", \"\");"
-echo "    this.className += \" active\";"
-echo "  });"
-echo "}"
-echo "function myFunction() {"
-echo "  var x = document.getElementById(\"myTopnav\");"
-echo "  if (x.className === \"topnav\") {"
-echo "    x.className += \" responsive\";"
-echo "  } else {"
-echo "    x.className = \"topnav\";"
-echo "  }"
-echo "}"
-echo "function myData() {"
-echo "  var input, filter, table, tr, td, i, txtValue;"
-echo "  input = document.getElementById(\"myInput\");"
-echo "  filter = input.value.toUpperCase();"
-echo "  table = document.getElementById(\"myTable\");"
-echo "  tr = table.getElementsByTagName(\"tr\");"
-echo "  for (i = 0; i < tr.length; i++) {"
-echo "  td = tr[i].getElementsByTagName(\"td\")[0];"
-echo "    if (td) {"
-echo "      txtValue = td.textContent || td.innerText;"
-echo "      if (txtValue.toUpperCase().indexOf(filter) > -1) {"
-echo "        tr[i].style.display = \"\";"
-echo "      } else {"
-echo "        tr[i].style.display = \"none\";"
-echo "      }"
-echo "    }"
-echo "  }"
-echo "}"
-echo "function mySecao() {"
-echo "  var input, filter, table, tr, td, i, txtValue;"
-echo "  input = document.getElementById(\"myInputsecao\");"
-echo "  filter = input.value.toUpperCase();"
-echo "  table = document.getElementById(\"myTable\");"
-echo "  tr = table.getElementsByTagName(\"tr\");"
-echo "  for (i = 0; i < tr.length; i++) {"
-echo "  td = tr[i].getElementsByTagName(\"td\")[1];"
-echo "    if (td && tr[i].style.display != \"none\") {"
-echo "      txtValue = td.textContent || td.innerText;"
-echo "      if (txtValue.toUpperCase().indexOf(filter) > -1) {"
-echo "        tr[i].style.display = \"\";"
-echo "      } else {"
-echo "        tr[i].style.display = \"none\";"
-echo "      }"
-echo "    }"
-echo "  }"
-echo "}"
-echo "</script>"
-echo "</body>"
-echo "<p><center>Atualizado em: $atualiza</center></p>"
-echo "<p><center><input type=\"text\" id=\"myInput\" onkeyup=\"myData();mySecao()\" placeholder=\"Pesquise por dia. Ex.: 1970-12-31\" title=\"Pesquise por dia. Ex.: 1970-12-31\"></center></p>"
-echo "<p><center><input type=\"text\" id=\"myInputsecao\" onkeyup=\"myData();mySecao()\" placeholder=\"Pesquise por seção: Ex.: Seção 1\" title=\"Pesquise por seção: Ex.: Seção 1\"></center></p>"
-echo " "
-echo "<center><table id=myTable style=width:65%>"
-echo "<tr style=\"background-color: #DCDCDC;\" aling>"
-echo "    <th style=\"text-align:center\"> DATA </th>"
-echo "    <th style=\"text-align:center\"> SEÇÃO </th>"
-echo "    <th style=\"text-align:center\"> GN4 </th>"
-echo "  <th style=\"text-align:center\"> PORTAL </th>"
-echo "</tr>"
-
-
 hoje=`date +%d`
+meshoje=`date +%m`
+
+if [ $hoje -eq "01" ]
+then
+        if [ $meshoje -gt "10" ]
+        then
+                mesant=`echo $(($meshoje-1))`
+        elif [ $meshoje -eq "01" ]
+        then
+                mesant=12
+                anohoje=`date +%Y`
+                anoant=`echo $(($anohoje-1))`
+                mv /var/www/html/historico.html /var/www/html/historico-$anoant-$mesant.html
+        elif [ $meshoje -lt "10" ]
+        then
+                zero="0"
+                anohoje=`date +%Y`
+                mesant=`echo $zero$(($meshoje-1))`
+                mv /var/www/html/historico.html /var/www/html/historico-$anohoje-$mesant.html
+        fi
+else
+        rm -rf /var/www/html/historico.html
+fi
+
+atualiza=`date`
+echo "<html>" >> /var/www/html/historico.html
+echo "<title>Histórico de Publicações no Portal da IN</title>" >> /var/www/html/historico.html
+echo " " >> /var/www/html/historico.html
+echo "<head>" >> /var/www/html/historico.html
+echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" >> /var/www/html/historico.html
+echo "<style>" >> /var/www/html/historico.html
+echo "body {" >> /var/www/html/historico.html
+echo "  margin: 0;" >> /var/www/html/historico.html
+echo "  font-family: Arial, Helvetica, sans-serif;" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "table, th, td {" >> /var/www/html/historico.html
+echo "  border: 1px solid black;" >> /var/www/html/historico.html
+echo "  border-collapse: collapse;" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "tr:hover {" >> /var/www/html/historico.html
+echo "  background-color: #DCDCDC;" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "* {" >> /var/www/html/historico.html
+echo "  box-sizing: border-box;" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "#myInput {" >> /var/www/html/historico.html
+echo "  margin: auto;" >> /var/www/html/historico.html
+echo "  width: 65%;" >> /var/www/html/historico.html
+echo "  border: 3px solid #73AD21;" >> /var/www/html/historico.html
+echo "  padding: 10px;" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "#myInputsecao {" >> /var/www/html/historico.html
+echo "  margin: auto;" >> /var/www/html/historico.html
+echo "  width: 65%;" >> /var/www/html/historico.html
+echo "  border: 3px solid #73AD21;" >> /var/www/html/historico.html
+echo "  padding: 10px;" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "#myTable {" >> /var/www/html/historico.html
+echo "  border-collapse: collapse;" >> /var/www/html/historico.html
+echo "  width: 100%;" >> /var/www/html/historico.html
+echo "  border: 1px solid #ddd;" >> /var/www/html/historico.html
+echo "  font-size: 18px;" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "#myTable th, #myTable td {" >> /var/www/html/historico.html
+echo "  text-align: left;" >> /var/www/html/historico.html
+echo "  padding: 12px;" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "#myTable tr {" >> /var/www/html/historico.html
+echo "  border-bottom: 1px solid #ddd;" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "#myTable tr.header, #myTable tr:hover {" >> /var/www/html/historico.html
+echo "  background-color: #f1f1f1;" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "</style>" >> /var/www/html/historico.html
+echo " " >> /var/www/html/historico.html
+echo "<body>" >> /var/www/html/historico.html
+echo "<center><h2>Histórico de Publicações no Portal da IN</h2></center>" >> /var/www/html/historico.html
+echo "<script>" >> /var/www/html/historico.html
+echo "var btnContainer = document.getElementById(\"myBtnContainer\");" >> /var/www/html/historico.html
+echo "var btns = 0;" >> /var/www/html/historico.html
+echo "for (var i = 0; i < btns.length; i++) {" >> /var/www/html/historico.html
+echo "  btns[i].addEventListener(\"click\", function() {" >> /var/www/html/historico.html
+echo "    var current = document.getElementsByClassName(\"active\");" >> /var/www/html/historico.html
+echo "    current[0].className = current[0].className.replace(\" active\", \"\");" >> /var/www/html/historico.html
+echo "    this.className += \" active\";" >> /var/www/html/historico.html
+echo "  });" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "function myFunction() {" >> /var/www/html/historico.html
+echo "  var x = document.getElementById(\"myTopnav\");" >> /var/www/html/historico.html
+echo "  if (x.className === \"topnav\") {" >> /var/www/html/historico.html
+echo "    x.className += \" responsive\";" >> /var/www/html/historico.html
+echo "  } else {" >> /var/www/html/historico.html
+echo "    x.className = \"topnav\";" >> /var/www/html/historico.html
+echo "  }" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "function myData() {" >> /var/www/html/historico.html
+echo "  var input, filter, table, tr, td, i, txtValue;" >> /var/www/html/historico.html
+echo "  input = document.getElementById(\"myInput\");" >> /var/www/html/historico.html
+echo "  filter = input.value.toUpperCase();" >> /var/www/html/historico.html
+echo "  table = document.getElementById(\"myTable\");" >> /var/www/html/historico.html
+echo "  tr = table.getElementsByTagName(\"tr\");" >> /var/www/html/historico.html
+echo "  for (i = 0; i < tr.length; i++) {" >> /var/www/html/historico.html
+echo "  td = tr[i].getElementsByTagName(\"td\")[0];" >> /var/www/html/historico.html
+echo "    if (td) {" >> /var/www/html/historico.html
+echo "      txtValue = td.textContent || td.innerText;" >> /var/www/html/historico.html
+echo "      if (txtValue.toUpperCase().indexOf(filter) > -1) {" >> /var/www/html/historico.html
+echo "        tr[i].style.display = \"\";" >> /var/www/html/historico.html
+echo "      } else {" >> /var/www/html/historico.html
+echo "        tr[i].style.display = \"none\";" >> /var/www/html/historico.html
+echo "      }" >> /var/www/html/historico.html
+echo "    }" >> /var/www/html/historico.html
+echo "  }" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "function mySecao() {" >> /var/www/html/historico.html
+echo "  var input, filter, table, tr, td, i, txtValue;" >> /var/www/html/historico.html
+echo "  input = document.getElementById(\"myInputsecao\");" >> /var/www/html/historico.html
+echo "  filter = input.value.toUpperCase();" >> /var/www/html/historico.html
+echo "  table = document.getElementById(\"myTable\");" >> /var/www/html/historico.html
+echo "  tr = table.getElementsByTagName(\"tr\");" >> /var/www/html/historico.html
+echo "  for (i = 0; i < tr.length; i++) {" >> /var/www/html/historico.html
+echo "  td = tr[i].getElementsByTagName(\"td\")[1];" >> /var/www/html/historico.html
+echo "    if (td && tr[i].style.display != \"none\") {" >> /var/www/html/historico.html
+echo "      txtValue = td.textContent || td.innerText;" >> /var/www/html/historico.html
+echo "      if (txtValue.toUpperCase().indexOf(filter) > -1) {" >> /var/www/html/historico.html
+echo "        tr[i].style.display = \"\";" >> /var/www/html/historico.html
+echo "      } else {" >> /var/www/html/historico.html
+echo "        tr[i].style.display = \"none\";" >> /var/www/html/historico.html
+echo "      }" >> /var/www/html/historico.html
+echo "    }" >> /var/www/html/historico.html
+echo "  }" >> /var/www/html/historico.html
+echo "}" >> /var/www/html/historico.html
+echo "</script>" >> /var/www/html/historico.html
+echo "</body>" >> /var/www/html/historico.html
+echo "<p><center>Atualizado em: $atualiza</center></p>" >> /var/www/html/historico.html
+echo "<p><center><input type=\"text\" id=\"myInput\" onkeyup=\"myData();mySecao()\" placeholder=\"Pesquise por dia. Ex.: 1970-12-31\" title=\"Pesquise por dia. Ex.: 1970-12-31\"></center></p>" >> /var/www/html/historico.html
+echo "<p><center><input type=\"text\" id=\"myInputsecao\" onkeyup=\"myData();mySecao()\" placeholder=\"Pesquise por seção: Ex.: Seção 1\" title=\"Pesquise por seção: Ex.: Seção 1\"></center></p>" >> /var/www/html/historico.html
+echo " " >> /var/www/html/historico.html
+echo "<center><table id=myTable style=width:65%>" >> /var/www/html/historico.html
+echo "<tr style=\"background-color: #DCDCDC;\" aling>" >> /var/www/html/historico.html
+echo "    <th style=\"text-align:center\"> DATA </th>" >> /var/www/html/historico.html
+echo "    <th style=\"text-align:center\"> SEÇÃO </th>" >> /var/www/html/historico.html
+echo "    <th style=\"text-align:center\"> GN4 </th>" >> /var/www/html/historico.html
+echo "  <th style=\"text-align:center\"> PORTAL </th>" >> /var/www/html/historico.html
+echo "</tr>" >> /var/www/html/historico.html
+
 for dia in $( eval echo {"$hoje"..1});
 do
-        if [ $dia -lt 10 ]
+        if [ $dia -lt "10" ]
         then
-                dia=0$dia
-        else
-                echo "ok" > /dev/null
+                zero="0"
+                dia=$zero$dia
         fi
-
+        if [[ "$dia" == *"00"* ]]
+        then
+                dia=`echo $dia | sed 's/^.//'`
+        fi
         ano=`date +%Y`
         mes=`date +%m`
         data="$ano-$mes-$dia"
@@ -198,27 +222,27 @@ do
 
                 rm -rf /opt/kafka-monitor/countgn4.sh
 
-                get1=`/bin/curl -G --silent -XGET 'https://portal-homol.in.gov.br/leiturajornal' --data-urlencode "data=$dia-$mes-$ano" --data-urlencode "secao=$secao" | grep "pubOrder"`
+                get1=`/bin/curl -G --silent -XGET 'http://172.16.2.210:8080/leiturajornal' --data-urlencode "data=$dia-$mes-$ano" --data-urlencode "secao=$secao" | grep "pubOrder"`
                 count=`echo "$get1" | sed -r '/^\s*$/d' | wc -l`
 
                 if [ $count -ne 0 ]
                 then
-                        quantidadeportal=`echo "$get1" | python -m json.tool | grep 'numberPage' | wc -l`
+                        quantidadeportal=`echo "$get1" | python -m json.tool | grep 'numberPage' | wc -l` >> /var/www/html/historico.html
                 else
-                        quantidadeportal=`echo 0`
+                        quantidadeportal=`echo 0` >> /var/www/html/historico.html
                 fi
 
-                echo "<tr>"
-                echo "<td style="text-align:center">$data</td>"
-                echo "<td style="text-align:center">$nome</td>"
-                echo "<td style="text-align:center">$quantidadegn4</td>"
-                echo "<td style="text-align:center">$quantidadeportal</td>"
-                echo "</tr>"
+                echo "<tr>" >> /var/www/html/historico.html
+                echo "<td style="text-align:center">$data</td>" >> /var/www/html/historico.html
+                echo "<td style="text-align:center">$nome</td>" >> /var/www/html/historico.html
+                echo "<td style="text-align:center">$quantidadegn4</td>" >> /var/www/html/historico.html
+                echo "<td style="text-align:center">$quantidadeportal</td>" >> /var/www/html/historico.html
+                echo "</tr>" >> /var/www/html/historico.html
 
                 rm -rf /opt/kafka-monitor/logs/messages-html-$data-1.log
         done
         rm -rf /opt/kafka-monitor/logs/messages-html-$data.log
 done
 
-echo "</table></center>"
-echo "</html>"
+echo "</table></center>" >> /var/www/html/historico.html
+echo "</html>" >> /var/www/html/historico.html
